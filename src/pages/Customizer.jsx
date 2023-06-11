@@ -45,6 +45,21 @@ const Customizer = () => {
   }
 }
 
+const handleSubmit = async(type) => {
+  if(!prompt) {
+    return alert('Please enter a prompt');
+  }
+
+  try {
+    // call our API
+  } catch (error) {
+    alert('Something went wrong. Please try again', error);
+  } finally {
+    setGeneratingImg(false);
+    setActiveEditorTab('');
+  }
+};
+
 const handleActiveFilterTab = (tabName) => {
   switch (tabName) {
     case 'logoShirt':
