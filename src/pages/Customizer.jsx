@@ -5,7 +5,7 @@ import { useSnapshot } from 'valtio';
 import config from '../config/config';
 import state from '../store';
 import { download } from '../assets';
-import { downloadCanvasToImage } from '../config/helpers';
+import { downloadCanvasToImage, reader } from '../config/helpers';
 import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants';
 import { fadeAnimation, slideAnimation } from '../config/motion';
 
@@ -52,6 +52,20 @@ const handleSubmit = async(type) => {
 
   try {
     // call our API
+    setGeneratingImg(true);
+    const response = await fetch(`http://localhost:7070/api/v1/dalle/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+
+    const result = await response.json();
+    handleDecals(type, `data:image/png;base64,${data.photo}`);
+    
   } catch (error) {
     alert('Something went wrong. Please try again', error);
   } finally {
@@ -87,15 +101,15 @@ const handleDecals = (result, type) => {
 
   state[decalType.stateProperty] = result;
 
-  if(!activeFilterTab[decalType.FilterTab]) {
-    handleActiveFilterTab(decalType.FilterTab);
+  if(!activeFilterTab[decalType.filterTab]) {
+    handleActiveFilterTab(decalType.filterTab);
   }
 };
 
 const readFile = (type) => {
   reader(file)
   .then((result) => {
-    handleDecals(result, type);
+    handleDecals(type, result);
     setActiveEditorTab('');
   })
 };
